@@ -1,5 +1,95 @@
-"""Composition placeholder.
+from collections.abc import Callable
 
-TODO: Register use-case handlers, validators and application behaviours.
-No DI container or runtime wiring is implemented here.
-"""
+from application.carts.commands.add_product_to_cart.add_product_to_cart import (
+    AddProductToCartCommand,
+    AddProductToCartCommandHandler,
+)
+from application.carts.commands.add_product_to_cart.add_product_to_cart_command_validator import (
+    AddProductToCartCommandValidator,
+)
+from application.carts.commands.remove_product_from_cart.remove_product_from_cart import (
+    RemoveProductFromCartCommand,
+    RemoveProductFromCartCommandHandler,
+)
+from application.carts.commands.remove_product_from_cart.remove_product_from_cart_command_validator import (
+    RemoveProductFromCartCommandValidator,
+)
+from application.carts.commands.update_cart_item_quantity.update_cart_item_quantity import (
+    UpdateCartItemQuantityCommand,
+    UpdateCartItemQuantityCommandHandler,
+)
+from application.carts.commands.update_cart_item_quantity.update_cart_item_quantity_command_validator import (
+    UpdateCartItemQuantityCommandValidator,
+)
+from application.carts.queries.get_cart.get_cart import GetCartQuery, GetCartQueryHandler
+from application.common.dispatching.dispatcher import Dispatcher
+from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.payment_gateway import PaymentGateway
+from application.common.interfaces.sender import Sender
+from application.orders.commands.cancel_order.cancel_order import (
+    CancelOrderCommand,
+    CancelOrderCommandHandler,
+)
+from application.orders.commands.cancel_order.cancel_order_command_validator import (
+    CancelOrderCommandValidator,
+)
+from application.orders.commands.checkout.checkout import CheckoutCommand, CheckoutCommandHandler
+from application.orders.commands.checkout.checkout_command_validator import CheckoutCommandValidator
+from application.orders.commands.create_order.create_order import (
+    CreateOrderCommand,
+    CreateOrderCommandHandler,
+)
+from application.orders.commands.create_order.create_order_command_validator import (
+    CreateOrderCommandValidator,
+)
+from application.orders.queries.get_order.get_order import GetOrderQuery, GetOrderQueryHandler
+from application.products.queries.get_product_by_id.get_product_by_id import (
+    GetProductByIdQuery,
+    GetProductByIdQueryHandler,
+)
+from application.products.queries.get_products.get_products import (
+    GetProductsQuery,
+    GetProductsQueryHandler,
+)
+
+
+def create_sender(
+    context_factory: Callable[[], ApplicationDbContext], payment: PaymentGateway
+) -> Sender:
+    """Register use cases, injecting fresh transaction dependencies per send."""
+    sender = Dispatcher()
+    sender.register(
+        AddProductToCartCommand,
+        lambda: AddProductToCartCommandHandler(context_factory()),
+        AddProductToCartCommandValidator(),
+    )
+    sender.register(
+        RemoveProductFromCartCommand,
+        lambda: RemoveProductFromCartCommandHandler(context_factory()),
+        RemoveProductFromCartCommandValidator(),
+    )
+    sender.register(
+        UpdateCartItemQuantityCommand,
+        lambda: UpdateCartItemQuantityCommandHandler(context_factory()),
+        UpdateCartItemQuantityCommandValidator(),
+    )
+    sender.register(GetCartQuery, lambda: GetCartQueryHandler(context_factory()))
+    sender.register(
+        CancelOrderCommand,
+        lambda: CancelOrderCommandHandler(context_factory()),
+        CancelOrderCommandValidator(),
+    )
+    sender.register(
+        CheckoutCommand,
+        lambda: CheckoutCommandHandler(context_factory(), payment),
+        CheckoutCommandValidator(),
+    )
+    sender.register(
+        CreateOrderCommand,
+        lambda: CreateOrderCommandHandler(context_factory()),
+        CreateOrderCommandValidator(),
+    )
+    sender.register(GetOrderQuery, lambda: GetOrderQueryHandler(context_factory()))
+    sender.register(GetProductByIdQuery, lambda: GetProductByIdQueryHandler(context_factory()))
+    sender.register(GetProductsQuery, lambda: GetProductsQueryHandler(context_factory()))
+    return sender

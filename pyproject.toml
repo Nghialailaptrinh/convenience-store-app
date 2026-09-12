@@ -31,4 +31,4 @@ target-version = "py312"
 pythonpath = ["src"]
 
 [tool.setuptools.package-data]
-web = ["static/*"]
+web = ["wwwroot/*", "appsettings.json", "web.http"]

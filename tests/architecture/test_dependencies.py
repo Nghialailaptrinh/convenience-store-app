@@ -1,10 +1,16 @@
 """Enforce inward dependencies without importing frameworks."""
+
 import ast
 from pathlib import Path
 
 
 def test_dependency_boundaries():
-    root = Path(__file__).resolve().parents[2] / "src"
+    repository = next(
+        parent
+        for parent in Path(__file__).resolve().parents
+        if (parent / "pyproject.toml").is_file()
+    )
+    root = repository / "src"
     forbidden = {
         "domain": {"application", "infrastructure", "web", "fastapi", "pydantic", "sqlalchemy"},
         "application": {"infrastructure", "web", "fastapi", "pydantic", "sqlalchemy"},
@@ -21,7 +27,7 @@ def test_dependency_boundaries():
                 else:
                     continue
                 for module in modules:
-                    if path == root / "web/main.py" and module in {
+                    if path == root / "web/program.py" and module in {
                         "infrastructure.dependency_injection",
                         "domain.exceptions.business_rule_error",
                     }:

@@ -1,0 +1,6 @@
+from typing import Protocol
+
+
+class IdentityService(Protocol):
+    def get_user_name(self, user_id: str) -> str | None: ...
+    def is_in_role(self, user_id: str, role: str) -> bool: ...

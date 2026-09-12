@@ -7,12 +7,18 @@ from sqlalchemy.orm import Session
 from application.common.interfaces.product_repository import ProductRepository
 from domain.entities.product import Product
 from domain.value_objects.money import Money
-from infrastructure.data.models import ProductRecord
+from infrastructure.data.configurations.product_configuration import ProductRecord
 
 
 def to_product(row: ProductRecord) -> Product:
-    return Product(UUID(row.id), row.name, row.description, Money(Decimal(row.amount), row.currency),
-                   UUID(row.category_id), row.is_active)
+    return Product(
+        UUID(row.id),
+        row.name,
+        row.description,
+        Money(Decimal(row.amount), row.currency),
+        UUID(row.category_id),
+        row.is_active,
+    )
 
 
 class SqlAlchemyProductRepository(ProductRepository):
@@ -20,8 +26,10 @@ class SqlAlchemyProductRepository(ProductRepository):
         self.session = session
 
     def get_all(self) -> list[Product]:
-        return [to_product(row) for row in self.session.scalars(
-            select(ProductRecord).order_by(ProductRecord.id))]
+        return [
+            to_product(row)
+            for row in self.session.scalars(select(ProductRecord).order_by(ProductRecord.id))
+        ]
 
     def get_by_id(self, product_id: UUID) -> Product | None:
         row = self.session.get(ProductRecord, str(product_id))

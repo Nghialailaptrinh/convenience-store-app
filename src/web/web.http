@@ -1,0 +1,20 @@
+@host = http://127.0.0.1:8000
+@customer = 11111111-1111-1111-1111-111111111111
+
+### Catalog
+GET {{host}}/products
+
+### Add a product
+POST {{host}}/cart/items
+Content-Type: application/json
+
+{"customer_id":"{{customer}}","product_id":"00000000-0000-0000-0000-000000000001","quantity":1}
+
+### Read cart
+GET {{host}}/cart?customer_id={{customer}}
+
+### Create a pending order
+POST {{host}}/orders
+Content-Type: application/json
+
+{"customer_id":"{{customer}}"}

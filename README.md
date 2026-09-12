@@ -13,7 +13,8 @@ Infrastructure → Application (interfaces) + Domain (mapping)
 Application khong phu thuoc truc tiep vao mot repository implementation. Handler nhan
 `IApplicationDbContext`; context contract nay gom cac port `IProductRepository`,
 `ICartRepository` va `IOrderRepository` cung `save_changes()`. Infrastructure trien khai
-contract do bang `ApplicationDbContext`, sau do noi cac adapter SQLAlchemy vao cac port.
+contract do bang `ApplicationDbContext`; cac adapter trong `infrastructure/repositories/`
+chi la implementation detail duoc context tao va quan ly.
 
 Day la adaptation theo Python, khong phai ban sao EF Core:
 
@@ -30,6 +31,10 @@ ApplicationDbContext
     +--> ICartRepository     -> SqlAlchemyCartRepository    -> SQLAlchemy
     `--> IOrderRepository    -> SqlAlchemyOrderRepository   -> SQLAlchemy
 ```
+
+Handler khong import `IProductRepository`, `ICartRepository` hay `IOrderRepository`.
+Chung chi xuat hien trong contract cua context va lop adapter Infrastructure, gan voi
+vai tro `DbSet`/query access trong ban .NET.
 
 | Layer | Vai trò |
 | --- | --- |

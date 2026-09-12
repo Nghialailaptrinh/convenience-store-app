@@ -51,7 +51,8 @@ Giữ Python theo lựa chọn của project: PascalCase → snake_case, `.cs` �
 - Base domain và event là khung mở rộng, chưa đổi entity đang chạy sang audited entity hoặc tự phát event.
   Logging/performance/unhandled-exception behaviours có mẫu xử lý nhưng chưa đăng ký vào dispatcher.
 - Query DTO giữ response JSON hiện tại; không thêm `*Vm` chỉ để bọc lại một danh sách.
-- `repositories/`, `payment/`, `common/dispatching/` và các Python request/handler/sender protocols
+- `repositories/` là adapter nội bộ do `ApplicationDbContext` sở hữu; handler không phụ thuộc trực tiếp
+  vào các repository này. `payment/`, `common/dispatching/` và các Python request/handler/sender protocols
   bổ sung phần cần cho demo, thay EF Core/MediatR bằng adapter Python. Context vẫn quản lý transaction nguyên tử.
 - Không đưa `.csproj`, `.slnx`, `GlobalUsings.cs`, NuGet/MSBuild, Aspire/AppHost/TestAppHost,
   Angular/React client, ASP.NET Identity/OpenAPI transformers, launchSettings và .NET reflection extensions vào Python.

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from application.common.interfaces.order_repository import OrderRepository
+from application.common.interfaces.order_repository import IOrderRepository
 from domain.entities.order import Order
 from domain.entities.order_item import OrderItem
 from domain.enums.order_status import OrderStatus
@@ -11,7 +11,7 @@ from domain.value_objects.money import Money
 from infrastructure.data.configurations.order_configuration import OrderRecord
 
 
-class SqlAlchemyOrderRepository(OrderRepository):
+class SqlAlchemyOrderRepository(IOrderRepository):
     def __init__(self, session: Session) -> None:
         self.session = session
 

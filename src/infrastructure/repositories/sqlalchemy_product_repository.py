@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from application.common.interfaces.product_repository import ProductRepository
+from application.common.interfaces.product_repository import IProductRepository
 from domain.entities.product import Product
 from domain.value_objects.money import Money
 from infrastructure.data.configurations.product_configuration import ProductRecord
@@ -21,14 +21,16 @@ def to_product(row: ProductRecord) -> Product:
     )
 
 
-class SqlAlchemyProductRepository(ProductRepository):
+class SqlAlchemyProductRepository(IProductRepository):
     def __init__(self, session: Session) -> None:
         self.session = session
 
     def get_all(self) -> list[Product]:
         return [
             to_product(row)
-            for row in self.session.scalars(select(ProductRecord).order_by(ProductRecord.id))
+            for row in self.session.scalars(
+                select(ProductRecord).order_by(ProductRecord.id)
+            )
         ]
 
     def get_by_id(self, product_id: UUID) -> Product | None:

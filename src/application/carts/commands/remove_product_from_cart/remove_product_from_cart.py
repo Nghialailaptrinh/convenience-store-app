@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 
@@ -12,8 +12,10 @@ class RemoveProductFromCartCommand(Request[None]):
     product_id: UUID
 
 
-class RemoveProductFromCartCommandHandler(RequestHandler[RemoveProductFromCartCommand, None]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+class RemoveProductFromCartCommandHandler(
+    RequestHandler[RemoveProductFromCartCommand, None]
+):
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: RemoveProductFromCartCommand) -> None:

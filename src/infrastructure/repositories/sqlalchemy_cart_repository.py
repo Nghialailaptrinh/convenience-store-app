@@ -3,13 +3,13 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from application.common.interfaces.cart_repository import CartRepository
+from application.common.interfaces.cart_repository import ICartRepository
 from domain.entities.cart import Cart
 from domain.entities.cart_item import CartItem
 from infrastructure.data.configurations.cart_configuration import CartRecord
 
 
-class SqlAlchemyCartRepository(CartRepository):
+class SqlAlchemyCartRepository(ICartRepository):
     def __init__(self, session: Session) -> None:
         self.session = session
 
@@ -22,7 +22,10 @@ class SqlAlchemyCartRepository(CartRepository):
         return Cart(
             UUID(row.id),
             UUID(row.customer_id),
-            [CartItem(UUID(item["product_id"]), item["quantity"]) for item in row.items],
+            [
+                CartItem(UUID(item["product_id"]), item["quantity"])
+                for item in row.items
+            ],
         )
 
     def save(self, cart: Cart) -> None:

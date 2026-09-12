@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 
 from application.common.exceptions.not_found import NotFoundError
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 
@@ -13,7 +13,7 @@ class CancelOrderCommand(Request[None]):
 
 
 class CancelOrderCommandHandler(RequestHandler[CancelOrderCommand, None]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: CancelOrderCommand) -> None:

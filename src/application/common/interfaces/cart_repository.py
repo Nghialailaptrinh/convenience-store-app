@@ -4,7 +4,7 @@ from uuid import UUID
 from domain.entities.cart import Cart
 
 
-class CartRepository(Protocol):
+class ICartRepository(Protocol):
     def get_by_customer_id(self, customer_id: UUID) -> Cart | None: ...
 
     def save(self, cart: Cart) -> None: ...

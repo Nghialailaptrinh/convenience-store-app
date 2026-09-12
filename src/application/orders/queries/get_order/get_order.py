@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from application.orders.queries.get_order.order_dto import OrderDto
@@ -13,7 +13,7 @@ class GetOrderQuery(Request[OrderDto | None]):
 
 
 class GetOrderQueryHandler(RequestHandler[GetOrderQuery, OrderDto | None]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: GetOrderQuery) -> OrderDto | None:

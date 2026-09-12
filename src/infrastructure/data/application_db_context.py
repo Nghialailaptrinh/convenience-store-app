@@ -1,11 +1,18 @@
 from sqlalchemy.orm import Session, sessionmaker
 
-from infrastructure.repositories.sqlalchemy_cart_repository import SqlAlchemyCartRepository
-from infrastructure.repositories.sqlalchemy_order_repository import SqlAlchemyOrderRepository
-from infrastructure.repositories.sqlalchemy_product_repository import SqlAlchemyProductRepository
+from application.common.interfaces.application_db_context import IApplicationDbContext
+from infrastructure.repositories.sqlalchemy_cart_repository import (
+    SqlAlchemyCartRepository,
+)
+from infrastructure.repositories.sqlalchemy_order_repository import (
+    SqlAlchemyOrderRepository,
+)
+from infrastructure.repositories.sqlalchemy_product_repository import (
+    SqlAlchemyProductRepository,
+)
 
 
-class ApplicationDbContext:
+class ApplicationDbContext(IApplicationDbContext):
     def __init__(self, session_factory: sessionmaker[Session]) -> None:
         self.session_factory = session_factory
 

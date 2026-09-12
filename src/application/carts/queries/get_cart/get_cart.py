@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 from application.carts.queries.get_cart.cart_dto import CartDto
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from domain.entities.cart import Cart
@@ -14,7 +14,7 @@ class GetCartQuery(Request[CartDto]):
 
 
 class GetCartQueryHandler(RequestHandler[GetCartQuery, CartDto]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: GetCartQuery) -> CartDto:

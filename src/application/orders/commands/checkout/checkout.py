@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from application.common.interfaces.application_db_context import ApplicationDbContext
-from application.common.interfaces.payment_gateway import PaymentGateway
+from application.common.interfaces.application_db_context import IApplicationDbContext
+from application.common.interfaces.payment_gateway import IPaymentGateway
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from application.orders.common.build_order import build_order
@@ -14,7 +14,9 @@ class CheckoutCommand(Request[UUID]):
 
 
 class CheckoutCommandHandler(RequestHandler[CheckoutCommand, UUID]):
-    def __init__(self, context: ApplicationDbContext, payment: PaymentGateway) -> None:
+    def __init__(
+        self, context: IApplicationDbContext, payment: IPaymentGateway
+    ) -> None:
         self._context = context
         self._payment = payment
 

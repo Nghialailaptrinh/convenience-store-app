@@ -1,12 +1,12 @@
 from uuid import UUID, uuid4
 
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from domain.entities.order import Order
 from domain.entities.order_item import OrderItem
 from domain.exceptions.business_rule_error import BusinessRuleError
 
 
-def build_order(customer_id: UUID, context: ApplicationDbContext) -> Order:
+def build_order(customer_id: UUID, context: IApplicationDbContext) -> Order:
     """Build a price snapshot and consume the cart inside the caller's transaction."""
     cart = context.carts.get_by_customer_id(customer_id)
     if cart is None or not cart.items:

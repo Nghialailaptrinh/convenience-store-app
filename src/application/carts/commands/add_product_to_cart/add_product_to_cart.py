@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 from application.common.exceptions.not_found import NotFoundError
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from domain.entities.cart import Cart
@@ -17,7 +17,7 @@ class AddProductToCartCommand(Request[None]):
 
 
 class AddProductToCartCommandHandler(RequestHandler[AddProductToCartCommand, None]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: AddProductToCartCommand) -> None:

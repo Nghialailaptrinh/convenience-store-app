@@ -1,14 +1,14 @@
 from typing import Protocol, Self
 
-from application.common.interfaces.cart_repository import CartRepository
-from application.common.interfaces.order_repository import OrderRepository
-from application.common.interfaces.product_repository import ProductRepository
+from application.common.interfaces.cart_repository import ICartRepository
+from application.common.interfaces.order_repository import IOrderRepository
+from application.common.interfaces.product_repository import IProductRepository
 
 
-class ApplicationDbContext(Protocol):
-    products: ProductRepository
-    carts: CartRepository
-    orders: OrderRepository
+class IApplicationDbContext(Protocol):
+    products: IProductRepository
+    carts: ICartRepository
+    orders: IOrderRepository
 
     def __enter__(self) -> Self: ...
 

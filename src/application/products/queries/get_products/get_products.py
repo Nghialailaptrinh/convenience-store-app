@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from application.common.interfaces.application_db_context import ApplicationDbContext
+from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from application.products.queries.get_products.product_dto import ProductDto
@@ -12,7 +12,7 @@ class GetProductsQuery(Request[list[ProductDto]]):
 
 
 class GetProductsQueryHandler(RequestHandler[GetProductsQuery, list[ProductDto]]):
-    def __init__(self, context: ApplicationDbContext) -> None:
+    def __init__(self, context: IApplicationDbContext) -> None:
         self._context = context
 
     def handle(self, request: GetProductsQuery) -> list[ProductDto]:

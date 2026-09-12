@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from application.common.exceptions.use_case_not_implemented import UseCaseNotImplemented
+from application.common.interfaces.unit_of_work import UnitOfWork
 from domain.entities.product import Product
 
 
@@ -9,5 +9,6 @@ class GetProductsQuery:
     include_inactive: bool = False
 
 
-def handle(query: GetProductsQuery) -> list[Product]:
-    raise UseCaseNotImplemented("TODO: implement GetProducts query")
+def handle(query: GetProductsQuery, uow: UnitOfWork) -> list[Product]:
+    with uow:
+        return [p for p in uow.products.get_all() if query.include_inactive or p.is_active]

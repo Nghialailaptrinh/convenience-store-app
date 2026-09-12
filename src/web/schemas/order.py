@@ -21,6 +21,7 @@ class OrderItemResponse(BaseModel):
     product_id: UUID
     quantity: int
     unit_price: MoneyResponse
+    product_name: str
 
 
 class OrderResponse(BaseModel):
@@ -28,3 +29,5 @@ class OrderResponse(BaseModel):
     customer_id: UUID
     status: str
     items: list[OrderItemResponse]
+    total: MoneyResponse
+    payment_reference: str | None = None

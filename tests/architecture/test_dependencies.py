@@ -21,4 +21,9 @@ def test_dependency_boundaries():
                 else:
                     continue
                 for module in modules:
+                    if path == root / "web/main.py" and module in {
+                        "infrastructure.dependency_injection",
+                        "domain.exceptions.business_rule_error",
+                    }:
+                        continue  # Explicit host composition and HTTP error mapping only.
                     assert module.split(".")[0] not in denied, (path, module)

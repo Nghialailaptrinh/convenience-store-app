@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12634c">
+  <title>Góc Tiện Lợi · Mua sắm mỗi ngày</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="header">
+    <a class="brand" href="/" aria-label="Góc Tiện Lợi, trang chủ"><span class="brand-icon">g.</span>góc tiện lợi<span class="demo">DEMO</span></a>
+    <a class="cart-link" href="#cart">Giỏ hàng <span id="cart-count">0</span></a>
+  </header>
+  <main>
+    <section class="intro">
+      <div><p class="eyebrow">CỬA HÀNG NHỎ, ĐỦ ĐIỀU BẠN CẦN</p><h1>Một chút tiện lợi<br>cho ngày của bạn.</h1><p>Đồ uống, bữa ăn nhanh và những món thiết yếu.</p></div>
+      <div class="intro-note"><span class="note-icon" aria-hidden="true">✳</span><strong>Chọn món. Thêm vào giỏ.<br>Thử đặt hàng.</strong><small>Đây là cửa hàng demo.<br>Không thu tiền hoặc giao hàng thật.</small></div>
+    </section>
+    <div id="message" class="message" role="status" aria-live="polite" hidden></div>
+    <div class="layout">
+      <section class="catalog" aria-label="Sản phẩm">
+        <div class="section-heading"><div><p class="eyebrow">MUA SẮM MỖI NGÀY</p><h2>Trên kệ hôm nay <span id="product-count"></span></h2></div></div>
+        <label class="search"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Tìm món bạn cần…" aria-label="Tìm sản phẩm"></label>
+        <div class="filters" id="filters" aria-label="Danh mục sản phẩm">
+          <button class="filter active" data-category="all" aria-pressed="true">Tất cả</button>
+          <button class="filter" data-category="101" aria-pressed="false">Đồ uống</button>
+          <button class="filter" data-category="102" aria-pressed="false">Ăn nhanh</button>
+          <button class="filter" data-category="103" aria-pressed="false">Ăn vặt</button>
+          <button class="filter" data-category="104" aria-pressed="false">Thiết yếu</button>
+        </div>
+        <div id="products" class="products" aria-live="polite"><p class="empty">Đang xếp sản phẩm lên kệ…</p></div>
+      </section>
+      <aside class="sidebar">
+        <section id="cart" class="cart panel" aria-labelledby="cart-title">
+          <div class="panel-heading"><h2 id="cart-title">Giỏ của bạn</h2><span class="pill" id="cart-label">0 món</span></div>
+          <div id="cart-items"><p class="empty">Đang tải giỏ hàng…</p></div>
+          <div class="cart-total"><span>Tổng cộng</span><strong id="cart-total">0 ₫</strong></div>
+          <button id="checkout" class="button primary" disabled>Thanh toán demo</button>
+          <button id="create-order" class="button secondary" disabled>Tạo đơn chờ thanh toán</button>
+          <p class="help">Thanh toán demo được xác nhận ngay. Chọn tạo đơn chờ nếu bạn muốn thử hủy đơn.</p>
+        </section>
+        <section class="panel orders" aria-labelledby="orders-title">
+          <div class="panel-heading"><h2 id="orders-title">Đơn vừa đặt</h2><button id="refresh" class="text-button">Làm mới</button></div>
+          <div id="orders"><p class="empty">Đơn hàng sẽ xuất hiện ở đây.</p></div>
+          <p class="help">Hiển thị các đơn đã tạo trên trình duyệt này.</p>
+        </section>
+      </aside>
+    </div>
+    <footer><span class="footer-brand">góc tiện lợi.</span><span>Một cửa hàng nhỏ để thử luồng mua sắm.</span><a href="/docs" target="_blank" rel="noopener">API docs ↗</a></footer>
+  </main>
+  <dialog id="product-dialog" aria-labelledby="detail-title"><button class="dialog-close" id="close-dialog" aria-label="Đóng chi tiết">×</button><div id="product-detail"></div></dialog>
+</body>
+</html>

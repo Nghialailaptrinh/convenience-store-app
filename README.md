@@ -1,7 +1,23 @@
 # Convenience Store — Clean Architecture
 
 Demo cấu trúc **Python** theo [Jason Taylor CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture).
-Mục tiêu là minh họa tổ chức code; nghiệp vụ, lưu dữ liệu và thanh toán vẫn là TODO.
+Bản demo chạy được: 10 use case, web mua sắm tiếng Việt, SQLite và thanh toán giả lập.
+
+## Chạy demo
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e ".[dev]"
+.\.venv\Scripts\python.exe -m uvicorn web.main:app --host 127.0.0.1 --port 8000
+```
+
+Mở **http://127.0.0.1:8000**; API docs tại `/docs`.
+SQLite tự tạo `shop.db` và thêm 9 sản phẩm mẫu khi khởi động, giữ dữ liệu khi chạy lại.
+
+- Thêm/sửa/xóa sản phẩm trong giỏ → **Tạo đơn chờ thanh toán** → có thể hủy.
+- **Thanh toán demo** tạo đơn đã thanh toán, không thu tiền thật; không hỗ trợ hủy/hoàn tiền đơn này.
+- Giỏ được xóa khi tạo đơn thành công; payment thất bại sẽ rollback, giữ nguyên giỏ.
+- Demo chưa có đăng nhập: customer ID và danh sách mã đơn được giữ trên trình duyệt.
 
 ## Kiến trúc
 
@@ -17,7 +33,8 @@ Infrastructure → Application (interfaces) và Domain (mapping)
 | **Infrastructure** | Triển khai database, repository, payment và dịch vụ ngoài. |
 | **Web** | Nhận request, gọi Application, trả response; không chứa business logic. |
 
-Khi triển khai DI, host là nơi ghép Application với Infrastructure; nghiệp vụ không phụ thuộc cách ghép này.
+`web/main.py` là composition root ghép các layer; handler nhận repository qua Unit of Work.
+Mỗi command commit một transaction; query không ghi dữ liệu.
 
 ## Cấu trúc theo mẫu
 
@@ -44,7 +61,7 @@ src/
 │   ├── identity/, repositories/, payment/
 │   └── dependency_injection.py
 └── web/
-    ├── endpoints/, infrastructure/, services/, schemas/
+    ├── endpoints/, infrastructure/, services/, schemas/, static/
     ├── dependency_injection.py
     └── main.py
 tests/                        # domain_unit, application_unit, application_functional,
@@ -64,6 +81,9 @@ validator hoặc DTO riêng sẽ đặt cùng slice. Các thư mục chưa dùng
 | `IApplicationDbContext` và EF Core | Giữ repository interfaces theo yêu cầu cửa hàng; SQLAlchemy nằm ở Infrastructure. |
 | Các project test riêng theo layer | Các thư mục test tương ứng trong Python. |
 
-Đây là bản mô phỏng cấu trúc, không phải bản port toàn bộ template .NET.
-`dependency_injection.py`, behaviours, identity và event handlers hiện chỉ là vị trí dự kiến;
-không cần chạy server hay database để xem demo.
+Giữ cấu trúc mẫu, dùng repository + SQLAlchemy và JSON cho các dòng giỏ/đơn để hạ tầng demo gọn.
+Behaviours, identity và event handlers vẫn là placeholder. Payment thật, đăng nhập và migrations
+chưa triển khai; bản demo chỉ chạy local. SQLite tuần tự hóa transaction để tránh checkout trùng.
+
+Kiểm tra: `.\.venv\Scripts\python.exe -m pytest -q` và
+`.\.venv\Scripts\python.exe -m ruff check src tests`.

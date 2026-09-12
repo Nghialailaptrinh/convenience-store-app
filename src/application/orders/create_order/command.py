@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from application.errors import UseCaseNotImplemented
+
 
 @dataclass(frozen=True)
 class CreateOrderCommand:
@@ -8,4 +10,4 @@ class CreateOrderCommand:
 
 
 def handle(command: CreateOrderCommand) -> UUID:
-    raise NotImplementedError("TODO: implement CreateOrder command")
+    raise UseCaseNotImplemented("TODO: implement CreateOrder command")

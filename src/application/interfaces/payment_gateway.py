@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-from src.domain.value_objects.money import Money
+from domain.value_objects.money import Money
 
 
 class PaymentGateway(Protocol):

@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.domain.entities.product import Product
+from application.errors import UseCaseNotImplemented
+from domain.entities.product import Product
 
 
 @dataclass(frozen=True)
@@ -10,4 +11,4 @@ class GetProductByIdQuery:
 
 
 def handle(query: GetProductByIdQuery) -> Product | None:
-    raise NotImplementedError("TODO: implement GetProductById query")
+    raise UseCaseNotImplemented("TODO: implement GetProductById query")

@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-from src.domain.entities.cart import Cart
+from domain.entities.cart import Cart
 
 
 class CartRepository(Protocol):

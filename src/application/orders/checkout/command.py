@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from application.errors import UseCaseNotImplemented
+
 
 @dataclass(frozen=True)
 class CheckoutCommand:
@@ -8,4 +10,4 @@ class CheckoutCommand:
 
 
 def handle(command: CheckoutCommand) -> UUID:
-    raise NotImplementedError("TODO: implement Checkout command")
+    raise UseCaseNotImplemented("TODO: implement Checkout command")

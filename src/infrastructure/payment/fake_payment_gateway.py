@@ -1,8 +1,8 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 
-from src.domain.value_objects.money import Money
+from domain.value_objects.money import Money
 
 
 class FakePaymentGateway:
     def charge(self, customer_id: UUID, amount: Money) -> str:
-        raise NotImplementedError("TODO: replace with a real payment provider")
+        raise NotImplementedError("Payment adapter is not configured; no payment was made")

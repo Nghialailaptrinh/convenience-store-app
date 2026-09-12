@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from src.domain.entities.order_item import OrderItem
-from src.domain.enums.order_status import OrderStatus
+from domain.entities.order_item import OrderItem
+from domain.enums.order_status import OrderStatus
 
 
 @dataclass

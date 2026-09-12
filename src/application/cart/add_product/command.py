@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from application.errors import UseCaseNotImplemented
+
 
 @dataclass(frozen=True)
 class AddProductToCartCommand:
@@ -10,4 +12,4 @@ class AddProductToCartCommand:
 
 
 def handle(command: AddProductToCartCommand) -> None:
-    raise NotImplementedError("TODO: implement AddProductToCart command")
+    raise UseCaseNotImplemented("TODO: implement AddProductToCart command")

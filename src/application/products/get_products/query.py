@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from src.domain.entities.product import Product
+from application.errors import UseCaseNotImplemented
+from domain.entities.product import Product
 
 
 @dataclass(frozen=True)
@@ -9,4 +10,4 @@ class GetProductsQuery:
 
 
 def handle(query: GetProductsQuery) -> list[Product]:
-    raise NotImplementedError("TODO: implement GetProducts query")
+    raise UseCaseNotImplemented("TODO: implement GetProducts query")

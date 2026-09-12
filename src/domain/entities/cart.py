@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from uuid import UUID
 
-from src.domain.entities.cart_item import CartItem
+from domain.entities.cart_item import CartItem
 
 
 @dataclass

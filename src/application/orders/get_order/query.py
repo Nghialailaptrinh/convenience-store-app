@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from src.domain.entities.order import Order
+from application.errors import UseCaseNotImplemented
+from domain.entities.order import Order
 
 
 @dataclass(frozen=True)
@@ -10,4 +11,4 @@ class GetOrderQuery:
 
 
 def handle(query: GetOrderQuery) -> Order | None:
-    raise NotImplementedError("TODO: implement GetOrder query")
+    raise UseCaseNotImplemented("TODO: implement GetOrder query")

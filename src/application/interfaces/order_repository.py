@@ -1,7 +1,7 @@
 from typing import Protocol
 from uuid import UUID
 
-from src.domain.entities.order import Order
+from domain.entities.order import Order
 
 
 class OrderRepository(Protocol):

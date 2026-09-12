@@ -1,7 +1,17 @@
+from sqlalchemy import Engine
+
+from application.common.interfaces.identity_service import IIdentityService
 from infrastructure.data.application_db_context import ApplicationDbContext
 from infrastructure.data.application_db_context_initialiser import initialise_demo
 from infrastructure.data.connection import create_database_engine, create_session_factory
+from infrastructure.identity.identity_service import IdentityService
+from infrastructure.identity.password_hasher import PasswordHasher
 from infrastructure.payment.fake_payment_gateway import FakePaymentGateway
+
+
+def create_identity_service(engine: Engine) -> IIdentityService:
+    """Step 1 factory. Web authentication is not wired yet; initialise the schema first."""
+    return IdentityService(create_session_factory(engine), PasswordHasher())
 
 
 def create_demo_dependencies(database_url: str | None = None):

@@ -1,5 +1,10 @@
-"""Extension point matching ApplicationUser in the source template.
+from dataclasses import dataclass, field
 
-No identity persistence model is configured. Customer remains a shopping-domain
-entity; add the authentication provider's user model here when required.
-"""
+
+@dataclass(frozen=True)
+class ApplicationUser:
+    """Local identity account. Customer remains a separate Domain concept."""
+
+    id: str
+    email: str
+    password_hash: str = field(repr=False)

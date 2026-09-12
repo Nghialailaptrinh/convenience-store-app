@@ -1,0 +1,1 @@
+"""Remove product command slice."""

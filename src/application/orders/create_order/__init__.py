@@ -1,0 +1,1 @@
+"""Create order command slice."""

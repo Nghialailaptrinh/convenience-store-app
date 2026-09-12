@@ -1,0 +1,1 @@
+"""Convenience store application package."""

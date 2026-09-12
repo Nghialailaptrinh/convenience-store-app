@@ -1,0 +1,1 @@
+"""Get cart query slice."""

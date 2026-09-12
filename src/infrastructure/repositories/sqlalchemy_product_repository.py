@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from application.interfaces.product_repository import ProductRepository
+from application.common.interfaces.product_repository import ProductRepository
 from domain.entities.product import Product
 
 

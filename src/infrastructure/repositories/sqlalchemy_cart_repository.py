@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from application.interfaces.cart_repository import CartRepository
+from application.common.interfaces.cart_repository import CartRepository
 from domain.entities.cart import Cart
 
 

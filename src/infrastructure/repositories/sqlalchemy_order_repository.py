@@ -2,7 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.orm import Session
 
-from application.interfaces.order_repository import OrderRepository
+from application.common.interfaces.order_repository import OrderRepository
 from domain.entities.order import Order
 
 

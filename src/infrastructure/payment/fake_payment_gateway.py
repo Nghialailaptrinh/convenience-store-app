@@ -1,10 +1,11 @@
 from uuid import UUID, uuid4
 
+from application.common.interfaces.payment_gateway import IPaymentGateway
 from application.common.exceptions.payment_failed import PaymentFailedError
 from domain.value_objects.money import Money
 
 
-class FakePaymentGateway:
+class FakePaymentGateway(IPaymentGateway):
     """Demo only: no external calls, no actual money movement."""
 
     def __init__(self, fail: bool = False) -> None:

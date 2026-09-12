@@ -10,6 +10,27 @@ Web → Application → Domain
 Infrastructure → Application (interfaces) + Domain (mapping)
 ```
 
+Application khong phu thuoc truc tiep vao mot repository implementation. Handler nhan
+`IApplicationDbContext`; context contract nay gom cac port `IProductRepository`,
+`ICartRepository` va `IOrderRepository` cung `save_changes()`. Infrastructure trien khai
+contract do bang `ApplicationDbContext`, sau do noi cac adapter SQLAlchemy vao cac port.
+
+Day la adaptation theo Python, khong phai ban sao EF Core:
+
+```text
+Handler
+    |
+    v
+IApplicationDbContext
+    |
+    v
+ApplicationDbContext
+    |
+    +--> IProductRepository  -> SqlAlchemyProductRepository -> SQLAlchemy
+    +--> ICartRepository     -> SqlAlchemyCartRepository    -> SQLAlchemy
+    `--> IOrderRepository    -> SqlAlchemyOrderRepository   -> SQLAlchemy
+```
+
 | Layer | Vai trò |
 | --- | --- |
 | **Domain** | Entity, value object, quy tắc nghiệp vụ; không phụ thuộc ORM/framework. |
@@ -47,7 +68,7 @@ tests/               # domain_unit_tests, application_unit_tests,
 ```
 
 Mỗi slice đặt **tên file trùng use case**, chứa request bất biến và handler riêng.
-Handler nhận `ApplicationDbContext` qua constructor, xử lý bằng `handle(request)`;
+Handler nhận `IApplicationDbContext` qua constructor, xử lý bằng `handle(request)`;
 endpoint gọi `sender.send(...)`. Validator chạy trước handler; query trả DTO.
 [Bảng đối chiếu file với mẫu](docs/template_structure.md).
 
@@ -59,7 +80,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m uvicorn web.program:app --host 127.0.0.1 --port 8000
 ```
 
-Mở **http://127.0.0.1:8000**; API docs: `/docs`. Dữ liệu lưu ở `shop.db`.
+Mở **<http://127.0.0.1:8000>**; API docs: `/docs`. Dữ liệu lưu ở `shop.db`.
 Tạo đơn chờ để thử hủy; checkout mô phỏng thanh toán, không thu tiền thật.
 Demo chưa có đăng nhập, payment thật hoặc migrations; các phần Identity/auditing/events vẫn là khung mở rộng.
 

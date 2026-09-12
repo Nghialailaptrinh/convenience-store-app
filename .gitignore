@@ -1,6 +1,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+.test_artifacts/
 .ruff_cache/
 .venv/
 *.db

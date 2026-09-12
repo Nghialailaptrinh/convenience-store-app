@@ -29,6 +29,7 @@ target-version = "py312"
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+cache_dir = ".test_artifacts/cache"
 
 [tool.setuptools.package-data]
 web = ["wwwroot/*", "appsettings.json", "web.http"]

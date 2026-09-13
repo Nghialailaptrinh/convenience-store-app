@@ -27,8 +27,23 @@ from application.carts.queries.get_cart.get_cart import (
 )
 from application.common.dispatching.dispatcher import Dispatcher
 from application.common.interfaces.application_db_context import IApplicationDbContext
+from application.common.interfaces.identity_service import IIdentityService
 from application.common.interfaces.payment_gateway import IPaymentGateway
 from application.common.interfaces.sender import Sender
+from application.identity.commands.login_user.login_user import (
+    LoginUserCommand,
+    LoginUserCommandHandler,
+)
+from application.identity.commands.login_user.login_user_command_validator import (
+    LoginUserCommandValidator,
+)
+from application.identity.commands.register_user.register_user import (
+    RegisterUserCommand,
+    RegisterUserCommandHandler,
+)
+from application.identity.commands.register_user.register_user_command_validator import (
+    RegisterUserCommandValidator,
+)
 from application.orders.commands.cancel_order.cancel_order import (
     CancelOrderCommand,
     CancelOrderCommandHandler,
@@ -65,10 +80,21 @@ from application.products.queries.get_products.get_products import (
 
 
 def create_sender(
-    context_factory: Callable[[], IApplicationDbContext], payment: IPaymentGateway
+    context_factory: Callable[[], IApplicationDbContext],
+    payment: IPaymentGateway,
+    identity: IIdentityService | None = None,
 ) -> Sender:
     """Register use cases, injecting fresh transaction dependencies per send."""
     sender = Dispatcher()
+    if identity is not None:
+        sender.register(
+            RegisterUserCommand,
+            lambda: RegisterUserCommandHandler(identity),
+            RegisterUserCommandValidator(),
+        )
+        sender.register(
+            LoginUserCommand, lambda: LoginUserCommandHandler(identity), LoginUserCommandValidator()
+        )
     sender.register(
         AddProductToCartCommand,
         lambda: AddProductToCartCommandHandler(context_factory()),
@@ -101,10 +127,6 @@ def create_sender(
         CreateOrderCommandValidator(),
     )
     sender.register(GetOrderQuery, lambda: GetOrderQueryHandler(context_factory()))
-    sender.register(
-        GetProductByIdQuery, lambda: GetProductByIdQueryHandler(context_factory())
-    )
-    sender.register(
-        GetProductsQuery, lambda: GetProductsQueryHandler(context_factory())
-    )
+    sender.register(GetProductByIdQuery, lambda: GetProductByIdQueryHandler(context_factory()))
+    sender.register(GetProductsQuery, lambda: GetProductsQueryHandler(context_factory()))
     return sender

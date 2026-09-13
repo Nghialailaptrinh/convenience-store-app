@@ -4,6 +4,9 @@
 
 Kiến trúc project được tham khảo từ [Jason Taylor CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture) và điều chỉnh để phù hợp với Python.
 
+Identity có API đăng ký và kiểm tra đăng nhập tại `/docs`, chưa phát token/session.
+Xem [hướng dẫn Bước 2](docs/identity_step_2.md).
+
 Mục tiêu:
 
 * Tách biệt business logic khỏi framework và database.

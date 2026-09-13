@@ -10,7 +10,7 @@ from infrastructure.payment.fake_payment_gateway import FakePaymentGateway
 
 
 def create_identity_service(engine: Engine) -> IIdentityService:
-    """Step 1 factory. Web authentication is not wired yet; initialise the schema first."""
+    """Build the identity port; the host initialises the schema before calling this."""
     return IdentityService(create_session_factory(engine), PasswordHasher())
 
 

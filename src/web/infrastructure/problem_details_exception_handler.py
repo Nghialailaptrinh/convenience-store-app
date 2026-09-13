@@ -9,7 +9,10 @@ from application.common.exceptions.validation_exception import ValidationExcepti
 def add_exception_handlers(app: FastAPI, error_statuses: dict[type[Exception], int]) -> None:
     async def handle_error(request: Request, exc: Exception):
         status = next(code for kind, code in error_statuses.items() if isinstance(exc, kind))
-        return JSONResponse(status_code=status, content={"detail": str(exc)})
+        headers = (
+            {"WWW-Authenticate": "Bearer", "Cache-Control": "no-store"} if status == 401 else {}
+        )
+        return JSONResponse(status_code=status, content={"detail": str(exc)}, headers=headers)
 
     async def handle_validation(request: Request, exc: ValidationException):
         return JSONResponse(status_code=422, content={"detail": str(exc), "errors": exc.errors})

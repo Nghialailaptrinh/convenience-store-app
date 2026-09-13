@@ -27,9 +27,11 @@ from application.carts.queries.get_cart.get_cart import (
 )
 from application.common.dispatching.dispatcher import Dispatcher
 from application.common.interfaces.application_db_context import IApplicationDbContext
+from application.common.interfaces.current_user import ICurrentUser
 from application.common.interfaces.identity_service import IIdentityService
 from application.common.interfaces.payment_gateway import IPaymentGateway
 from application.common.interfaces.sender import Sender
+from application.common.interfaces.token_service import ITokenService
 from application.identity.commands.login_user.login_user import (
     LoginUserCommand,
     LoginUserCommandHandler,
@@ -43,6 +45,10 @@ from application.identity.commands.register_user.register_user import (
 )
 from application.identity.commands.register_user.register_user_command_validator import (
     RegisterUserCommandValidator,
+)
+from application.identity.queries.get_current_user.get_current_user import (
+    GetCurrentUserQuery,
+    GetCurrentUserQueryHandler,
 )
 from application.orders.commands.cancel_order.cancel_order import (
     CancelOrderCommand,
@@ -83,6 +89,8 @@ def create_sender(
     context_factory: Callable[[], IApplicationDbContext],
     payment: IPaymentGateway,
     identity: IIdentityService | None = None,
+    tokens: ITokenService | None = None,
+    current_user: ICurrentUser | None = None,
 ) -> Sender:
     """Register use cases, injecting fresh transaction dependencies per send."""
     sender = Dispatcher()
@@ -92,9 +100,16 @@ def create_sender(
             lambda: RegisterUserCommandHandler(identity),
             RegisterUserCommandValidator(),
         )
-        sender.register(
-            LoginUserCommand, lambda: LoginUserCommandHandler(identity), LoginUserCommandValidator()
-        )
+        if tokens is not None:
+            sender.register(
+                LoginUserCommand,
+                lambda: LoginUserCommandHandler(identity, tokens),
+                LoginUserCommandValidator(),
+            )
+        if current_user is not None:
+            sender.register(
+                GetCurrentUserQuery, lambda: GetCurrentUserQueryHandler(current_user, identity)
+            )
     sender.register(
         AddProductToCartCommand,
         lambda: AddProductToCartCommandHandler(context_factory()),

@@ -11,8 +11,13 @@ from application.common.exceptions.invalid_credentials import InvalidCredentials
 from application.common.exceptions.not_found import NotFoundError
 from application.common.exceptions.payment_failed import PaymentFailedError
 from application.common.exceptions.registration_failed import RegistrationFailedError
+from application.common.exceptions.unauthenticated import UnauthenticatedError
 from domain.exceptions.business_rule_error import BusinessRuleError
-from infrastructure.dependency_injection import create_demo_dependencies, create_identity_service
+from infrastructure.dependency_injection import (
+    create_demo_dependencies,
+    create_identity_service,
+    create_token_service,
+)
 from web.endpoints.carts import router as carts_router
 from web.endpoints.health import router as health_router
 from web.endpoints.identity import router as identity_router
@@ -37,6 +42,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
         engine, app.state.context_factory, app.state.payment = create_demo_dependencies(connection)
         try:
             app.state.identity = create_identity_service(engine)
+            app.state.tokens = create_token_service(engine)
             yield
         finally:
             engine.dispose()
@@ -50,6 +56,7 @@ def create_app(database_url: str | None = None) -> FastAPI:
             NotFoundError: 404,
             PaymentFailedError: 402,
             InvalidCredentialsError: 401,
+            UnauthenticatedError: 401,
             RegistrationFailedError: 409,
         },
     )

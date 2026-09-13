@@ -4,7 +4,9 @@ from pydantic import BaseModel, ConfigDict, Field, SecretStr
 from application.common.models.authentication_result import AuthenticationResult
 from application.identity.commands.login_user.login_user import LoginUserCommand
 from application.identity.commands.register_user.register_user import RegisterUserCommand
-from web.dependency_injection import SenderDependency
+from application.identity.queries.get_current_user.current_user_dto import CurrentUserDto
+from application.identity.queries.get_current_user.get_current_user import GetCurrentUserQuery
+from web.dependency_injection import AuthenticatedSenderDependency, SenderDependency
 
 router = APIRouter(prefix="/identity", tags=["identity"])
 
@@ -35,9 +37,15 @@ def register(request: RegisterUserRequest, sender: SenderDependency, response: R
 @router.post(
     "/login",
     response_model=AuthenticationResult,
-    description="Step 2: verify credentials only. No token or session is issued yet.",
+    description="Verify credentials and issue a Bearer token valid for one hour.",
 )
 def login(request: LoginUserRequest, sender: SenderDependency, response: Response):
     result = sender.send(LoginUserCommand(request.email, request.password.get_secret_value()))
     response.headers["Cache-Control"] = "no-store"
     return result
+
+
+@router.get("/me", response_model=CurrentUserDto)
+def current_user(sender: AuthenticatedSenderDependency, response: Response):
+    response.headers["Cache-Control"] = "no-store"
+    return sender.send(GetCurrentUserQuery())

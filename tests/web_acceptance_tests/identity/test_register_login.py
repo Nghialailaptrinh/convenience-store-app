@@ -12,18 +12,20 @@ def client(tmp_path):
         yield client
 
 
-def test_register_and_login_without_token_or_session(client):
+def test_register_and_login_issue_bearer_token(client):
     response = client.post("/identity/register", json=ACCOUNT)
     assert response.status_code == 201
     assert set(response.json()) == {"user_id"}
     login = client.post("/identity/login", json=ACCOUNT)
     assert login.status_code == 200
-    assert login.json() == response.json()
+    assert login.json()["user_id"] == response.json()["user_id"]
     assert login.headers["cache-control"] == "no-store"
     assert "set-cookie" not in login.headers
-    assert "access_token" not in login.json()
+    assert login.json()["access_token"]
+    assert login.json()["token_type"] == "Bearer"
+    assert login.json()["expires_in"] == 3600
     assert ACCOUNT["password"] not in login.text
-    assert client.get("/identity/me").status_code == 404
+    assert client.get("/identity/me").status_code == 401
 
 
 def test_duplicate_email_and_invalid_credentials(client):
@@ -58,6 +60,6 @@ def test_invalid_requests_do_not_echo_secrets(client, path, body):
 def test_identity_endpoints_appear_in_openapi(client):
     schema = client.get("/openapi.json").json()
     assert "/identity/register" in schema["paths"]
-    assert "No token or session" in schema["paths"]["/identity/login"]["post"]["description"]
+    assert "Bearer token" in schema["paths"]["/identity/login"]["post"]["description"]
     password = schema["components"]["schemas"]["LoginUserRequest"]["properties"]["password"]
     assert password["writeOnly"] is True

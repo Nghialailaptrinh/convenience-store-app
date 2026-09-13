@@ -4,6 +4,7 @@ from application.common.exceptions.invalid_credentials import InvalidCredentials
 from application.common.interfaces.identity_service import IIdentityService
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
+from application.common.interfaces.token_service import ITokenService
 from application.common.models.authentication_result import AuthenticationResult
 
 
@@ -14,8 +15,9 @@ class LoginUserCommand(Request[AuthenticationResult]):
 
 
 class LoginUserCommandHandler(RequestHandler[LoginUserCommand, AuthenticationResult]):
-    def __init__(self, identity: IIdentityService) -> None:
+    def __init__(self, identity: IIdentityService, tokens: ITokenService) -> None:
         self._identity = identity
+        self._tokens = tokens
 
     def handle(self, request: LoginUserCommand) -> AuthenticationResult:
         user_id = self._identity.verify_credentials(
@@ -23,4 +25,4 @@ class LoginUserCommandHandler(RequestHandler[LoginUserCommand, AuthenticationRes
         )
         if user_id is None:
             raise InvalidCredentialsError()
-        return AuthenticationResult(user_id)
+        return self._tokens.issue(user_id)

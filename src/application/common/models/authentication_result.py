@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
 class AuthenticationResult:
-    """Step 2: credentials verified. This is not a token or an authenticated session."""
-
     user_id: str
+    access_token: str = field(repr=False)
+    expires_in: int
+    token_type: str = "Bearer"

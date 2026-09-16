@@ -25,4 +25,4 @@ class GetCurrentUserQueryHandler(RequestHandler[GetCurrentUserQuery, CurrentUser
         email = self._identity.get_user_name(user_id)
         if email is None:
             raise UnauthenticatedError()
-        return CurrentUserDto(user_id, email)
+        return CurrentUserDto(user_id, email, self._identity.get_display_name(user_id) or email)

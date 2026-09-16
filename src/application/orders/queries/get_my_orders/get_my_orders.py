@@ -1,28 +1,27 @@
 from dataclasses import dataclass
-from uuid import UUID
 
 from application.common.interfaces.application_db_context import IApplicationDbContext
 from application.common.interfaces.current_user import ICurrentUser
 from application.common.interfaces.request import Request
 from application.common.interfaces.request_handler import RequestHandler
 from application.common.security.require_customer import require_customer
-from application.orders.common.build_order import build_order
+from application.orders.queries.get_order.order_dto import OrderDto
 
 
 @dataclass(frozen=True)
-class CreateOrderCommand(Request[UUID]):
+class GetMyOrdersQuery(Request[list[OrderDto]]):
     pass
 
 
-class CreateOrderCommandHandler(RequestHandler[CreateOrderCommand, UUID]):
+class GetMyOrdersQueryHandler(RequestHandler[GetMyOrdersQuery, list[OrderDto]]):
     def __init__(self, context: IApplicationDbContext, current_user: ICurrentUser | None) -> None:
         self._context = context
         self._current_user = current_user
 
-    def handle(self, request: CreateOrderCommand) -> UUID:
+    def handle(self, request: GetMyOrdersQuery) -> list[OrderDto]:
         with self._context:
             customer_id = require_customer(self._context, self._current_user)
-            order = build_order(customer_id, self._context)
-            self._context.orders.save(order)
-            self._context.save_changes()
-            return order.id
+            return [
+                OrderDto.from_domain(order)
+                for order in self._context.orders.get_by_customer_id(customer_id)
+            ]

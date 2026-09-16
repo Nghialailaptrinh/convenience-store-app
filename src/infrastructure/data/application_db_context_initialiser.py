@@ -4,11 +4,13 @@ from sqlalchemy import Engine
 from sqlalchemy.orm import Session
 
 from infrastructure.data.configurations import Base, ProductRecord
+from infrastructure.data.migrations.link_users_to_customers import link_users_to_customers
 
 
 def initialise_demo(engine: Engine) -> None:
     """Explicit demo startup only. Seed missing products without resetting user data."""
     Base.metadata.create_all(engine)
+    link_users_to_customers(engine)
     products = [
         (1, "Sữa tươi nguyên chất", "Hộp 1 lít · Không đường", "32000", 1),
         (2, "Cà phê sữa đá", "Lon 235 ml · Đậm vị cà phê Việt", "18000", 1),

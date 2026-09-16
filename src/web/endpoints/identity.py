@@ -12,6 +12,7 @@ router = APIRouter(prefix="/identity", tags=["identity"])
 
 
 class RegisterUserRequest(BaseModel):
+    name: str | None = Field(default=None, max_length=100)
     model_config = ConfigDict(extra="forbid", strict=True)
     email: str = Field(max_length=254)
     password: SecretStr = Field(max_length=128)
@@ -29,7 +30,9 @@ class UserCreatedResponse(BaseModel):
 
 @router.post("/register", status_code=201, response_model=UserCreatedResponse)
 def register(request: RegisterUserRequest, sender: SenderDependency, response: Response):
-    user_id = sender.send(RegisterUserCommand(request.email, request.password.get_secret_value()))
+    user_id = sender.send(
+        RegisterUserCommand(request.email, request.password.get_secret_value(), request.name)
+    )
     response.headers["Cache-Control"] = "no-store"
     return UserCreatedResponse(user_id=user_id)
 
@@ -37,7 +40,7 @@ def register(request: RegisterUserRequest, sender: SenderDependency, response: R
 @router.post(
     "/login",
     response_model=AuthenticationResult,
-    description="Verify credentials and issue a Bearer token valid for one hour.",
+    description="Verify credentials and issue a Bearer token. See expires_in for its lifetime.",
 )
 def login(request: LoginUserRequest, sender: SenderDependency, response: Response):
     result = sender.send(LoginUserCommand(request.email, request.password.get_secret_value()))

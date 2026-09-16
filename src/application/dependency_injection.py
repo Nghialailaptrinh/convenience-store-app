@@ -71,6 +71,10 @@ from application.orders.commands.create_order.create_order import (
 from application.orders.commands.create_order.create_order_command_validator import (
     CreateOrderCommandValidator,
 )
+from application.orders.queries.get_my_orders.get_my_orders import (
+    GetMyOrdersQuery,
+    GetMyOrdersQueryHandler,
+)
 from application.orders.queries.get_order.get_order import (
     GetOrderQuery,
     GetOrderQueryHandler,
@@ -112,36 +116,39 @@ def create_sender(
             )
     sender.register(
         AddProductToCartCommand,
-        lambda: AddProductToCartCommandHandler(context_factory()),
+        lambda: AddProductToCartCommandHandler(context_factory(), current_user),
         AddProductToCartCommandValidator(),
     )
     sender.register(
         RemoveProductFromCartCommand,
-        lambda: RemoveProductFromCartCommandHandler(context_factory()),
+        lambda: RemoveProductFromCartCommandHandler(context_factory(), current_user),
         RemoveProductFromCartCommandValidator(),
     )
     sender.register(
         UpdateCartItemQuantityCommand,
-        lambda: UpdateCartItemQuantityCommandHandler(context_factory()),
+        lambda: UpdateCartItemQuantityCommandHandler(context_factory(), current_user),
         UpdateCartItemQuantityCommandValidator(),
     )
-    sender.register(GetCartQuery, lambda: GetCartQueryHandler(context_factory()))
+    sender.register(GetCartQuery, lambda: GetCartQueryHandler(context_factory(), current_user))
     sender.register(
         CancelOrderCommand,
-        lambda: CancelOrderCommandHandler(context_factory()),
+        lambda: CancelOrderCommandHandler(context_factory(), current_user),
         CancelOrderCommandValidator(),
     )
     sender.register(
         CheckoutCommand,
-        lambda: CheckoutCommandHandler(context_factory(), payment),
+        lambda: CheckoutCommandHandler(context_factory(), payment, current_user),
         CheckoutCommandValidator(),
     )
     sender.register(
         CreateOrderCommand,
-        lambda: CreateOrderCommandHandler(context_factory()),
+        lambda: CreateOrderCommandHandler(context_factory(), current_user),
         CreateOrderCommandValidator(),
     )
-    sender.register(GetOrderQuery, lambda: GetOrderQueryHandler(context_factory()))
+    sender.register(GetOrderQuery, lambda: GetOrderQueryHandler(context_factory(), current_user))
     sender.register(GetProductByIdQuery, lambda: GetProductByIdQueryHandler(context_factory()))
     sender.register(GetProductsQuery, lambda: GetProductsQueryHandler(context_factory()))
+    sender.register(
+        GetMyOrdersQuery, lambda: GetMyOrdersQueryHandler(context_factory(), current_user)
+    )
     return sender

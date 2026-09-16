@@ -9,8 +9,6 @@ from application.common.exceptions.validation_exception import ValidationExcepti
 class AddProductToCartCommandValidator:
     def validate(self, request: AddProductToCartCommand) -> None:
         errors: dict[str, list[str]] = {}
-        if not isinstance(request.customer_id, UUID):
-            errors["customer_id"] = ["Must be a UUID"]
         if not isinstance(request.product_id, UUID):
             errors["product_id"] = ["Must be a UUID"]
         if type(request.quantity) is not int or not 1 <= request.quantity <= 99:

@@ -7,3 +7,4 @@ class Customer:
     id: UUID
     name: str
     email: str
+    user_id: str | None = None

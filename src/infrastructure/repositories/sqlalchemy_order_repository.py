@@ -1,6 +1,7 @@
 from decimal import Decimal
 from uuid import UUID
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from application.common.interfaces.order_repository import IOrderRepository
@@ -19,6 +20,18 @@ class SqlAlchemyOrderRepository(IOrderRepository):
         row = self.session.get(OrderRecord, str(order_id))
         if row is None:
             return None
+        return self._to_domain(row)
+
+    def get_by_customer_id(self, customer_id: UUID) -> list[Order]:
+        rows = self.session.scalars(
+            select(OrderRecord)
+            .where(OrderRecord.customer_id == str(customer_id))
+            .order_by(OrderRecord.id)
+        )
+        return [self._to_domain(row) for row in rows]
+
+    @staticmethod
+    def _to_domain(row: OrderRecord) -> Order:
         return Order(
             id=UUID(row.id),
             customer_id=UUID(row.customer_id),

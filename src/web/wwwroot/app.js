@@ -6,31 +6,25 @@ const money = amount => new Intl.NumberFormat("vi-VN", {style:"currency",currenc
 const icons = ["🥛","☕","🍑","💧","🍞","🍜","🥔","🍪","🧻"];
 const tints = ["#e9eff8","#f1e9e0","#fff0e2","#e5f1f5","#f6eddf","#f4e7df","#f7efd8","#eee8df","#e8eee8"];
 let products = [], cart = {items:[]}, orders = [], category = "all", busy = false, loaded = false;
-let customerId, orderIds;
-try {
-  customerId = localStorage.getItem("shop.customer");
-  if (!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(customerId || "")) {
-    customerId = crypto.randomUUID();
-    localStorage.setItem("shop.customer", customerId);
-  }
-  orderIds = JSON.parse(localStorage.getItem("shop.orders") || "[]");
-  if (!Array.isArray(orderIds)) orderIds = [];
-  orderIds = orderIds.filter(id => typeof id === "string" && /^[0-9a-f-]{36}$/i.test(id)).slice(0,10);
-} catch {
-  customerId = crypto.randomUUID();
-  orderIds = [];
-}
+let accessToken = null, accountName = null;
+let accountMode = "login";
 const iconFor = id => icons[parseInt(id.slice(-4),16)-1] || "🛍️";
 const productFor = id => products.find(p => p.id === id);
 
 async function api(path, method="GET", body) {
-  const response = await fetch(path, {method, headers:body ? {"Content-Type":"application/json"} : {}, body:body ? JSON.stringify(body) : undefined});
+  const response = await fetch(path, {method, headers:{...(body ? {"Content-Type":"application/json"} : {}), ...(accessToken ? {Authorization:`Bearer ${accessToken}`} : {})}, body:body ? JSON.stringify(body) : undefined});
   if (!response.ok) {
     const result = await response.json().catch(() => ({}));
     const friendly = {"Cart is empty":"Giỏ hàng đang trống. Hãy thêm sản phẩm trước khi đặt đơn.","Product not found":"Không tìm thấy sản phẩm.","Product is unavailable":"Sản phẩm hiện ngừng bán.","Cart not found":"Không tìm thấy giỏ hàng.","A product in the cart is unavailable":"Một sản phẩm trong giỏ đã ngừng bán.","Order not found":"Không tìm thấy đơn hàng."};
     const detail = typeof result.detail === "string" ? result.detail : "Dữ liệu chưa hợp lệ. Vui lòng kiểm tra lại.";
     const error = new Error(friendly[detail] || detail);
     error.status = response.status;
+    if (response.status === 401) error.message = path === "/identity/login"
+      ? "Email hoặc mật khẩu chưa đúng."
+      : "Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại để tiếp tục.";
+    if (response.status === 401 && !path.startsWith("/identity/login")) {
+      accessToken = null; accountName = null; cart = {items:[]}; orders = [];
+    }
     throw error;
   }
   return response.status === 204 ? null : response.json();
@@ -72,16 +66,31 @@ function renderOrders() {
   $("orders").innerHTML = orders.length ? orders.map(order => `<div class="order"><div class="order-top"><span>#${escapeHtml(order.id.slice(0,8).toUpperCase())}</span><span class="status ${escapeHtml(order.status)}">${labels[order.status] || escapeHtml(order.status)}</span></div><p class="order-list">${order.items.map(item => `${escapeHtml(item.product_name)} × ${item.quantity}`).join("<br>")}</p><div class="order-total"><strong>${money(order.total.amount)}</strong>${order.status === "pending" ? `<button class="cancel" data-cancel="${order.id}" ${busy ? "disabled" : ""}>Hủy đơn</button>` : ""}</div></div>`).join("") : '<p class="empty">Chưa có đơn hàng.<br>Món ngon đang đợi bạn chọn.</p>';
   $("refresh").disabled = busy;
 }
-function render() { renderProducts(); renderCart(); renderOrders(); }
+function render() {
+  renderProducts(); renderCart(); renderOrders();
+  $("account-form").hidden = Boolean(accessToken);
+  $("account-logout").hidden = !accessToken;
+  $("account-status").textContent = accountName ? `Xin chào, ${accountName}!` : "";
+  for (const control of $("account-form").querySelectorAll("input, button")) control.disabled = busy;
+  $("account-logout").disabled = busy;
+  const registering = accountMode === "register";
+  $("account-title").textContent = accessToken ? "Tài khoản của bạn" : registering ? "Đăng ký" : "Đăng nhập";
+  $("account-help").hidden = Boolean(accessToken);
+  $("account-help").textContent = registering ? "Tạo tài khoản để bắt đầu mua sắm." : "Đăng nhập để dùng giỏ hàng và xem đơn của bạn.";
+  $("account-name-field").hidden = !registering;
+  $("account-name").disabled = busy || !registering;
+  $("account-name").required = registering;
+  $("account-password").minLength = registering ? 15 : 1;
+  $("account-password").autocomplete = registering ? "new-password" : "current-password";
+  $("account-register-help").hidden = Boolean(accessToken) || !registering;
+  $("account-submit").textContent = registering ? "Tạo tài khoản" : "Đăng nhập";
+  $("account-switch").textContent = registering ? "Đã có tài khoản? Đăng nhập" : "Chưa có tài khoản? Đăng ký";
+}
 async function refresh() {
-  const [nextProducts,nextCart,nextOrders] = await Promise.all([
-    api("/products"), api(`/cart?customer_id=${customerId}`),
-    Promise.all(orderIds.map(id => api(`/orders/${id}`).catch(error => {
-      if (error.status === 404) return null;
-      throw error;
-    })))
-  ]);
-  products = nextProducts; cart = nextCart; orders = nextOrders.filter(Boolean); loaded = true;
+  products = await api("/products"); loaded = true;
+  if (!accessToken) { cart = {items:[]}; orders = []; return; }
+  const [nextCart, nextOrders] = await Promise.all([api("/cart"), api("/orders/me")]);
+  cart = nextCart; orders = nextOrders;
 }
 async function perform(action, success) {
   if (busy) return;
@@ -91,13 +100,12 @@ async function perform(action, success) {
   finally { busy = false; render(); }
 }
 async function add(id) {
-  await perform(() => api("/cart/items", "POST", {customer_id:customerId,product_id:id,quantity:1}), "Đã thêm sản phẩm vào giỏ hàng.");
+  if (!accessToken) { message("Hãy đăng nhập để thêm sản phẩm vào giỏ."); $("account-email").focus(); return; }
+  await perform(() => api("/cart/items", "POST", {product_id:id,quantity:1}), "Đã thêm sản phẩm vào giỏ hàng.");
 }
 async function order(path) {
   await perform(async () => {
-    const result = await api(path, "POST", {customer_id:customerId});
-    orderIds = [result.order_id,...orderIds].slice(0,10);
-    try { localStorage.setItem("shop.orders", JSON.stringify(orderIds)); } catch { /* Session remains usable. */ }
+    await api(path, "POST", {});
   }, path.includes("checkout") ? "Thanh toán demo thành công. Bạn không bị trừ tiền thật." : "Đã tạo đơn chờ thanh toán. Bạn có thể thử hủy ở bên dưới.");
 }
 $("search").addEventListener("input", renderProducts);
@@ -115,7 +123,7 @@ document.addEventListener("click", async event => {
   if (data.add) { $("product-dialog").close(); await add(data.add); }
   if (data.quantity || data.remove) {
     const id = data.quantity || data.remove, quantity = Number(data.value || 0);
-    await perform(() => quantity === 0 ? api(`/cart/items/${id}?customer_id=${customerId}`, "DELETE") : api(`/cart/items/${id}`, "PATCH", {customer_id:customerId,quantity}));
+    await perform(() => quantity === 0 ? api(`/cart/items/${id}`, "DELETE") : api(`/cart/items/${id}`, "PATCH", {quantity}));
   }
   if (data.cancel) await perform(() => api(`/orders/${data.cancel}/cancel`, "POST"), "Đã hủy đơn hàng.");
   if (data.detail) {
@@ -130,4 +138,36 @@ $("checkout").addEventListener("click", () => order("/orders/checkout"));
 $("create-order").addEventListener("click", () => order("/orders"));
 $("refresh").addEventListener("click", () => perform(async () => {}, "Đã cập nhật giỏ hàng và đơn hàng."));
 $("close-dialog").addEventListener("click", () => $("product-dialog").close());
+$("account-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const registering = accountMode === "register";
+  const name = $("account-name").value.trim();
+  if (registering && !name) {
+    message("Vui lòng nhập họ tên khi đăng ký.", true);
+    $("account-name").focus(); return;
+  }
+  perform(async () => {
+    const body = {email:$("account-email").value, password:$("account-password").value};
+    if (registering) await api("/identity/register", "POST", {...body, name});
+    const result = await api("/identity/login", "POST", body);
+    accessToken = result.access_token;
+    const profile = await api("/identity/me");
+    accountName = profile.name && profile.name !== profile.email ? profile.name : "bạn";
+    accountMode = "login";
+    $("account-password").value = "";
+  });
+});
+$("account-switch").addEventListener("click", () => {
+  if (busy) return;
+  accountMode = accountMode === "login" ? "register" : "login";
+  $("account-password").value = "";
+  $("message").hidden = true;
+  render();
+  $(accountMode === "register" ? "account-name" : "account-email").focus();
+});
+$("account-logout").addEventListener("click", () => {
+  if (busy) return;
+  accountMode = "login";
+  accessToken = null; accountName = null; cart = {items:[]}; orders = []; render();
+});
 perform(async () => {});

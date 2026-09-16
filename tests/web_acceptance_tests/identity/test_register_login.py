@@ -23,7 +23,7 @@ def test_register_and_login_issue_bearer_token(client):
     assert "set-cookie" not in login.headers
     assert login.json()["access_token"]
     assert login.json()["token_type"] == "Bearer"
-    assert login.json()["expires_in"] == 3600
+    assert login.json()["expires_in"] == 60
     assert ACCOUNT["password"] not in login.text
     assert client.get("/identity/me").status_code == 401
 

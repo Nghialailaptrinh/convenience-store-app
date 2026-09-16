@@ -15,5 +15,9 @@ class RegisterUserCommandValidator:
             errors["email"] = ["Enter a valid email address (maximum 254 characters)"]
         if not isinstance(request.password, str) or not 15 <= len(request.password) <= 128:
             errors["password"] = ["Password must contain 15 to 128 characters"]
+        if request.name is not None and (
+            not isinstance(request.name, str) or not 1 <= len(request.name.strip()) <= 100
+        ):
+            errors["name"] = ["Name must contain 1 to 100 characters"]
         if errors:
             raise ValidationException(errors)

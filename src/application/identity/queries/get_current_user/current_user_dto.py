@@ -5,3 +5,4 @@ from dataclasses import dataclass
 class CurrentUserDto:
     user_id: str
     email: str
+    name: str

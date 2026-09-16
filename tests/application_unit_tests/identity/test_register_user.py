@@ -18,7 +18,7 @@ def test_register_dispatches_and_normalizes_email_without_changing_password():
     sender = create_sender(Mock(), Mock(), identity)
     command = RegisterUserCommand(" STUDENT@Example.com ", PASSWORD)
     assert sender.send(command) == "user-1"
-    identity.create_user.assert_called_once_with("student@example.com", PASSWORD)
+    identity.create_user.assert_called_once_with("student@example.com", PASSWORD, None)
     assert PASSWORD not in repr(command)
     with pytest.raises(FrozenInstanceError):
         command.email = "changed@example.com"

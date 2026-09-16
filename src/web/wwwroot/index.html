@@ -14,6 +14,20 @@
     <a class="cart-link" href="#cart">Giỏ hàng <span id="cart-count">0</span></a>
   </header>
   <main>
+    <section class="panel account" aria-labelledby="account-title">
+      <h2 id="account-title">Đăng nhập</h2>
+      <p class="help" id="account-help">Đăng nhập để dùng giỏ hàng và xem đơn của bạn.</p>
+      <p id="account-status" role="status"></p>
+      <form id="account-form">
+        <label id="account-name-field" hidden>Họ tên <input id="account-name" type="text" autocomplete="name" maxlength="100" placeholder="Nguyễn Văn An" disabled></label>
+        <label>Email <input id="account-email" type="email" autocomplete="username" maxlength="254" required></label>
+        <label>Mật khẩu <input id="account-password" type="password" autocomplete="current-password" maxlength="128" required></label>
+        <button class="button primary" id="account-submit" type="submit">Đăng nhập</button>
+        <button class="button secondary" id="account-switch" type="button">Chưa có tài khoản? Đăng ký</button>
+      </form>
+      <p class="help" id="account-register-help" hidden>Mật khẩu đăng ký cần từ 15 đến 128 ký tự.</p>
+      <button class="button secondary" id="account-logout" type="button" hidden>Thoát tài khoản trên trang này</button>
+    </section>
     <section class="intro">
       <div><p class="eyebrow">CỬA HÀNG NHỎ, ĐỦ ĐIỀU BẠN CẦN</p><h1>Một chút tiện lợi<br>cho ngày của bạn.</h1><p>Đồ uống, bữa ăn nhanh và những món thiết yếu.</p></div>
       <div class="intro-note"><span class="note-icon" aria-hidden="true">✳</span><strong>Chọn món. Thêm vào giỏ.<br>Thử đặt hàng.</strong><small>Đây là cửa hàng demo.<br>Không thu tiền hoặc giao hàng thật.</small></div>
@@ -42,9 +56,9 @@
           <p class="help">Thanh toán demo được xác nhận ngay. Chọn tạo đơn chờ nếu bạn muốn thử hủy đơn.</p>
         </section>
         <section class="panel orders" aria-labelledby="orders-title">
-          <div class="panel-heading"><h2 id="orders-title">Đơn vừa đặt</h2><button id="refresh" class="text-button">Làm mới</button></div>
+          <div class="panel-heading"><h2 id="orders-title">Đơn hàng của tôi</h2><button id="refresh" class="text-button">Làm mới</button></div>
           <div id="orders"><p class="empty">Đơn hàng sẽ xuất hiện ở đây.</p></div>
-          <p class="help">Hiển thị các đơn đã tạo trên trình duyệt này.</p>
+          <p class="help">Hiển thị đơn của tài khoản đang đăng nhập, trên mọi trình duyệt.</p>
         </section>
       </aside>
     </div>

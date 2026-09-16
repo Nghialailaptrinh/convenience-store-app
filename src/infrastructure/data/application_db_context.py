@@ -4,6 +4,7 @@ from application.common.interfaces.application_db_context import IApplicationDbC
 from infrastructure.repositories.sqlalchemy_cart_repository import (
     SqlAlchemyCartRepository,
 )
+from infrastructure.repositories.sqlalchemy_customer_repository import SqlAlchemyCustomerRepository
 from infrastructure.repositories.sqlalchemy_order_repository import (
     SqlAlchemyOrderRepository,
 )
@@ -23,6 +24,7 @@ class ApplicationDbContext(IApplicationDbContext):
             # Reads use the same transaction boundary but never persist changes.
             if self.session.bind.dialect.name == "sqlite":
                 self.session.connection().exec_driver_sql("BEGIN IMMEDIATE")
+            self.customers = SqlAlchemyCustomerRepository(self.session)
             self.products = SqlAlchemyProductRepository(self.session)
             self.carts = SqlAlchemyCartRepository(self.session)
             self.orders = SqlAlchemyOrderRepository(self.session)

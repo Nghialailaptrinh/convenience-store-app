@@ -10,6 +10,7 @@ from application.common.interfaces.request_handler import RequestHandler
 class RegisterUserCommand(Request[str]):
     email: str
     password: str = field(repr=False)
+    name: str | None = None
 
 
 class RegisterUserCommandHandler(RequestHandler[RegisterUserCommand, str]):
@@ -18,7 +19,9 @@ class RegisterUserCommandHandler(RequestHandler[RegisterUserCommand, str]):
 
     def handle(self, request: RegisterUserCommand) -> str:
         result, user_id = self._identity.create_user(
-            request.email.strip().casefold(), request.password
+            request.email.strip().casefold(),
+            request.password,
+            request.name.strip() if request.name is not None else None,
         )
         if not result.succeeded:
             raise RegistrationFailedError("; ".join(result.errors) or "Registration failed")

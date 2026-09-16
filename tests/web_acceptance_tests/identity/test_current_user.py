@@ -27,7 +27,7 @@ def test_two_users_are_request_scoped_and_token_survives_restart(tmp_path):
                 "/identity/me", headers={"Authorization": f"Bearer {user['access_token']}"}
             )
             assert response.status_code == 200
-            assert response.json() == {"user_id": user["user_id"], "email": email}
+            assert response.json() == {"user_id": user["user_id"], "email": email, "name": email}
             assert response.headers["cache-control"] == "no-store"
         assert client.get("/identity/me").status_code == 401
         schema = client.get("/openapi.json").json()

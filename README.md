@@ -5,7 +5,7 @@
 Kiến trúc project được tham khảo từ [Jason Taylor CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture) và điều chỉnh để phù hợp với Python.
 
 Identity có đăng ký, đăng nhập cấp Bearer token và `/identity/me`, thử tại `/docs`.
-Xem [hướng dẫn Bước 3](docs/identity_step_3.md). Cart/Order chưa kiểm tra quyền sở hữu.
+Giỏ hàng và đơn hàng thuộc tài khoản đăng nhập. Xem [hướng dẫn Bước 4](docs/identity_step_4.md).
 
 Mục tiêu:
 

@@ -22,5 +22,5 @@ def unexpected_context():
 def test_validation_precedes_handler_construction(quantity):
     sender = create_sender(unexpected_context, UnusedPayment())
     with pytest.raises(ValidationException) as error:
-        sender.send(AddProductToCartCommand(uuid4(), uuid4(), quantity))
+        sender.send(AddProductToCartCommand(uuid4(), quantity))
     assert "quantity" in error.value.errors

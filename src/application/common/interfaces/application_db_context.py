@@ -1,11 +1,13 @@
 from typing import Protocol, Self
 
 from application.common.interfaces.cart_repository import ICartRepository
+from application.common.interfaces.customer_repository import ICustomerRepository
 from application.common.interfaces.order_repository import IOrderRepository
 from application.common.interfaces.product_repository import IProductRepository
 
 
 class IApplicationDbContext(Protocol):
+    customers: ICustomerRepository
     products: IProductRepository
     carts: ICartRepository
     orders: IOrderRepository
